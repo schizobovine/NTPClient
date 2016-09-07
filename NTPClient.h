@@ -18,7 +18,7 @@ class NTPClient {
 
     unsigned int  _updateInterval = 60000;  // In ms
 
-    unsigned long _currentEpoc;             // In s
+    unsigned long _currentEpoc    = 0;      // In s
     unsigned long _lastUpdate     = 0;      // In ms
 
     byte          _packetBuffer[NTP_PACKET_SIZE];
@@ -56,4 +56,10 @@ class NTPClient {
      * @return time as raw seconds
      */
     unsigned long getRawTime();
+
+    /**
+     * @return True if this->_currentEpoc is zero (i.e., either it's 1900
+     * again, or we've yet to get a valid response from the NTP server.)
+     */
+    bool isValidYet();
 };
