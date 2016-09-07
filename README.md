@@ -9,7 +9,7 @@ Connect to a NTP server, here is how:
 const char *ssid     = "<SSID>";
 const char *password = "<PASSWORD>";
 
-// By default 'time.nist.gov' is used.
+// By default 'pool.ntp.org' is used.
 NTPClient timeClient;
 
 // You can specify the time server pool and the offset, (in seconds)

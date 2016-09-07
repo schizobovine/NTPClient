@@ -12,7 +12,7 @@ class NTPClient {
   private:
     WiFiUDP       _udp;
 
-    const char*   _poolServerName = "time.nist.gov"; // Default time server
+    const char*   _poolServerName = "pool.ntp.org"; // Default time server
     int           _port           = 1337;
     int           _timeOffset;
 
