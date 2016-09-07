@@ -95,4 +95,10 @@ class NTPClient {
      * Stops the underlying UDP client
      */
     void end();
+
+    /**
+     * @return True if this->_currentEpoc is zero (i.e., either it's 1900
+     * again, or we've yet to get a valid response from the NTP server.)
+     */
+    bool isValidYet();
 };

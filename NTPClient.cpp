@@ -173,3 +173,11 @@ void NTPClient::sendNTPPacket() {
   this->_udp->write(this->_packetBuffer, NTP_PACKET_SIZE);
   this->_udp->endPacket();
 }
+
+/**
+ * @return True if this->_currentEpoc is zero (i.e., either it's 1900
+ * again, or we've yet to get a valid response from the NTP server.)
+ */
+bool NTPClient::isValidYet() {
+  return (this->_currentEpoc == 0);
+}
