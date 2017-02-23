@@ -2,19 +2,20 @@
 
 #include "Arduino.h"
 
-#include <ESP8266WiFi.h>
-#include <WiFiUdp.h>
+#include <Udp.h>
 
 #define SEVENZYYEARS 2208988800UL
 #define NTP_PACKET_SIZE 48
+#define NTP_DEFAULT_LOCAL_PORT 1337
 
 class NTPClient {
   private:
-    WiFiUDP       _udp;
+    UDP*          _udp;
+    bool          _udpSetup       = false;
 
     const char*   _poolServerName = "pool.ntp.org"; // Default time server
-    int           _port           = 1337;
-    int           _timeOffset;
+    int           _port           = NTP_DEFAULT_LOCAL_PORT;
+    int           _timeOffset     = 0;
 
     unsigned int  _updateInterval = 60000;  // In ms
 
@@ -23,29 +24,55 @@ class NTPClient {
 
     byte          _packetBuffer[NTP_PACKET_SIZE];
 
-    void          sendNTPPacket(IPAddress _timeServerIP);
+    void          sendNTPPacket();
 
   public:
-    NTPClient();
-    NTPClient(int timeOffset);
-    NTPClient(const char* poolServerName);
-    NTPClient(const char* poolServerName, int timeOffset);
-    NTPClient(const char* poolServerName, int timeOffset, int updateInterval);
+    NTPClient(UDP& udp);
+    NTPClient(UDP& udp, int timeOffset);
+    NTPClient(UDP& udp, const char* poolServerName);
+    NTPClient(UDP& udp, const char* poolServerName, int timeOffset);
+    NTPClient(UDP& udp, const char* poolServerName, int timeOffset, int updateInterval);
+
+    /**
+     * Starts the underlying UDP client with the default local port
+     */
+    void begin();
+
+    /**
+     * Starts the underlying UDP client with the specified local port
+     */
+    void begin(int port);
 
     /**
      * This should be called in the main loop of your application. By default an update from the NTP Server is only
      * made every 60 seconds. This can be configured in the NTPClient constructor.
+     *
+     * @return true on success, false on failure
      */
-    void update();
+    bool update();
 
     /**
      * This will force the update from the NTP Server.
+     *
+     * @return true on success, false on failure
      */
-    void forceUpdate();
+    bool forceUpdate();
 
-    String getHours();
-    String getMinutes();
-    String getSeconds();
+    int getDay();
+    int getHours();
+    int getMinutes();
+    int getSeconds();
+
+    /**
+     * Changes the time offset. Useful for changing timezones dynamically
+     */
+    void setTimeOffset(int timeOffset);
+
+    /**
+     * Set the update interval to another frequency. E.g. useful when the
+     * timeOffset should not be set in the constructor
+     */
+    void setUpdateInterval(int updateInterval);
 
     /**
      * @return time formatted like `hh:mm:ss`
@@ -53,13 +80,19 @@ class NTPClient {
     String getFormattedTime();
 
     /**
-     * @return time as raw seconds
+     * @return time in seconds since Jan. 1, 1970
      */
-    unsigned long getRawTime();
+    unsigned long getEpochTime();
+
+    /**
+     * Stops the underlying UDP client
+     */
+    void end();
 
     /**
      * @return True if this->_currentEpoc is zero (i.e., either it's 1900
      * again, or we've yet to get a valid response from the NTP server.)
      */
     bool isValidYet();
+
 };
