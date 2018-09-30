@@ -101,4 +101,5 @@ class NTPClient {
      * again, or we've yet to get a valid response from the NTP server.)
      */
     bool isValidYet();
+
 };
